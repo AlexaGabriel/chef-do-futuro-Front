@@ -1,11 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Login             from "./pages/Login";
-import CadastroAluno     from "./pages/CadastroAluno";
-import CadastroProfessor from "./pages/CadastroProfessor";
-import Inicial           from "./pages/Inicial";
-import Catalogo          from "./pages/Catalogo";
-import Aula              from "./pages/Aula";
+import CadastroAluno from "./telaAluno/CadastroAluno";
+import CadastroProfessor from "./telaProfessor/CadastroProfessor";
+import Inicial from "./telaAluno/Inicial";
+import Catalogo          from "./telaAluno/Catalogo";
+import Aula              from "./telaAluno/Aula";
 
 export default function App() {
   return (

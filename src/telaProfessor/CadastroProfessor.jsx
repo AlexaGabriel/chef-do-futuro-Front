@@ -5,29 +5,55 @@ import Input       from "../components/ui/Input";
 import Select      from "../components/ui/Select";
 import FileUpload  from "../components/ui/FileUpload";
 import Button      from "../components/ui/Button";
+import professoresService from "../services/professoresService";
 
 const ESPECIALIDADES = [
   "Confeitaria", "Culinária Vegana", "Sushi & Culinária Japonesa",
   "Panificação", "Massas", "Gastronomia Molecular", "Churrasco",
 ];
-const TURNOS = ["Matutino", "Vespertino", "Noturno"];
 
 export default function CadastroProfessor() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    email: "", nome: "", especialidade: "", cpf: "", telefone: "", turno: "", arquivo: null,
+    email: "", 
+    nome: "", 
+    especialidades: [], 
+    cpf: "", 
+    telefone: "", 
+    bio: "",
+    cargaHoraria: 40,
+    disciplinas: []
   });
   const [enviado, setEnviado] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState(null);
 
   function set(field) {
-    return (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    return (e) => {
+      const value = e.target.value;
+      if (field === "especialidades") {
+        setForm((prev) => ({ ...prev, [field]: [value] }));
+      } else {
+        setForm((prev) => ({ ...prev, [field]: value }));
+      }
+    };
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    localStorage.setItem("professorNome", form.nome);
-    setEnviado(true);
-    setTimeout(() => navigate("/login"), 2200);
+    setLoading(true);
+    setErro(null);
+
+    try {
+      await professoresService.criar(form);
+      localStorage.setItem("professorNome", form.nome);
+      setEnviado(true);
+      setTimeout(() => navigate("/login"), 2200);
+    } catch (error) {
+      setErro(error.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -54,6 +80,12 @@ export default function CadastroProfessor() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            {erro && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                {erro}
+              </div>
+            )}
+
             {/* Linha 1 */}
             <div className="grid grid-cols-2 gap-4">
               <Input label="Insira seu E-mail" id="email" type="email" placeholder="exemplo@email.com" value={form.email} onChange={set("email")} required prefix="✉️" />
@@ -62,23 +94,19 @@ export default function CadastroProfessor() {
 
             {/* Linha 2 */}
             <div className="grid grid-cols-3 gap-4">
-              <Select label="Especialidades"    id="esp"  placeholder="" options={ESPECIALIDADES} value={form.especialidade} onChange={set("especialidade")} required />
-              <Input  label="CPF"               id="cpf"  type="text"   placeholder="000.000.000-00"   value={form.cpf}      onChange={set("cpf")}      />
-              <Input  label="Nº de telefone"    id="tel"  type="text"   placeholder="+55 11 99999 9999" value={form.telefone} onChange={set("telefone")} />
+              <Select label="Especialidade"    id="esp"  placeholder="" options={ESPECIALIDADES} value={form.especialidades[0] || ""} onChange={set("especialidades")} required />
+              <Input  label="CPF"               id="cpf"  type="text"   placeholder="000.000.000-00"   value={form.cpf}      onChange={set("cpf")} required />
+              <Input  label="Nº de telefone"    id="tel"  type="text"   placeholder="+55 11 99999 9999" value={form.telefone} onChange={set("telefone")} required />
             </div>
 
             {/* Linha 3 */}
             <div className="grid grid-cols-2 gap-4">
-              <FileUpload
-                label="Portfólio"
-                accept=".pdf,.doc,.docx"
-                onChange={(file) => setForm((prev) => ({ ...prev, arquivo: file }))}
-              />
-              <Select label="Turno" id="turno" placeholder="" options={TURNOS} value={form.turno} onChange={set("turno")} required />
+              <Input label="Bio / Descrição" id="bio" type="text" placeholder="Conte sobre você" value={form.bio} onChange={set("bio")} />
+              <Input label="Carga Horária (h/semana)" id="cargaHoraria" type="number" placeholder="40" value={form.cargaHoraria} onChange={set("cargaHoraria")} required />
             </div>
 
-            <Button type="submit" fullWidth className="mt-2">
-              Enviar Inscrição
+            <Button type="submit" fullWidth className="mt-2" disabled={loading}>
+              {loading ? "Enviando..." : "Enviar Inscrição"}
             </Button>
 
             <p className="text-center text-sm text-ink-muted">

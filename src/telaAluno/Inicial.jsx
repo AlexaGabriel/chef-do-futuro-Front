@@ -1,20 +1,30 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AppLayout       from "../layout/AppLayout";
 import Badge           from "../components/ui/Badge";
 import Button          from "../components/ui/Button";
 import QuickCourseCard from "../components/curso/QuickCourseCard";
-
-const CURSOS_RAPIDOS = [
-  { nome: "Massa Caseira",  label: "Curso 1", progresso: 60, img: "https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=300&q=80" },
-  { nome: "Sushi",          label: "Curso 2", progresso: 35, img: "https://images.unsplash.com/photo-1553621042-f6e147245754?w=300&q=80" },
-  { nome: "Tacos",          label: "Curso 3", progresso: 10, img: "https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?w=300&q=80" },
-  { nome: "Macarons",       label: "Curso 4", progresso: 80, img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?w=300&q=80" },
-  { nome: "Frango Assado",  label: "Curso 5", progresso: 20, img: "https://images.unsplash.com/photo-1518492104633-130d0cc84637?w=300&q=80" },
-  { nome: "Pão Artesanal",  label: "Curso 6", progresso: 50, img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300&q=80" },
-];
+import cursosService from "../services/cursosService";
 
 export default function Inicial() {
   const navigate = useNavigate();
+  const [cursos, setCursos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function carregarCursos() {
+      try {
+        const response = await cursosService.listar({ limite: 6 });
+        setCursos(response.dados || []);
+      } catch (error) {
+        console.error("Erro ao carregar cursos:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    carregarCursos();
+  }, []);
 
   return (
     <AppLayout>
@@ -70,15 +80,29 @@ export default function Inicial() {
       {/* ── Acesso Rápido ── */}
       <section className="mt-10 animate-fade-up-2">
         <h2 className="text-2xl font-black mb-5">Acesso Rápido</h2>
-        <div className="grid grid-cols-6 gap-4">
-          {CURSOS_RAPIDOS.map((curso, i) => (
-            <QuickCourseCard
-              key={i}
-              {...curso}
-              onClick={() => navigate("/aula/1")}
-            />
-          ))}
-        </div>
+        
+        {loading ? (
+          <div className="text-center py-10 text-ink-muted">
+            Carregando cursos...
+          </div>
+        ) : cursos.length === 0 ? (
+          <div className="text-center py-10 text-ink-muted">
+            Nenhum curso disponível no momento.
+          </div>
+        ) : (
+          <div className="grid grid-cols-6 gap-4">
+            {cursos.map((curso, i) => (
+              <QuickCourseCard
+                key={curso._id || curso.id}
+                nome={curso.titulo}
+                label={`Curso ${i + 1}`}
+                progresso={Math.floor(Math.random() * 100)}
+                img={curso.imagemUrl || "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=300&q=80"}
+                onClick={() => navigate(`/aula/${curso._id || curso.id}`)}
+              />
+            ))}
+          </div>
+        )}
       </section>
     </AppLayout>
   );

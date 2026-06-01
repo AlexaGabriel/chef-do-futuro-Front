@@ -25,6 +25,7 @@ export default function CadastroProfessor() {
 
   function handleSubmit(e) {
     e.preventDefault();
+    localStorage.setItem("professorNome", form.nome);
     setEnviado(true);
     setTimeout(() => navigate("/login"), 2200);
   }

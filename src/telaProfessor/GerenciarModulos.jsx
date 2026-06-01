@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import cursosService from "../services/cursosService";
 
 // ── Sidebar com ícones ────────────────────────────────────────────────────────
 const SIDEBAR_ICONS = [
@@ -31,30 +32,47 @@ function IconSidebar({ active = 1 }) {
 }
 
 // ── Componente principal ──────────────────────────────────────────────────────
-const PERIODOS = ["Manhã", "Tarde", "Noite", "Manhã/Noite", "Tarde/Noite"];
+const NIVEIS = ["iniciante", "intermediario", "avancado"];
 
 export default function GerenciarModulos() {
   const navigate = useNavigate();
+  const professorId = localStorage.getItem("professorId") || "temp-professor-id";
+  
   const [form, setForm] = useState({
-    modulo: "",
-    aula: "",
-    periodo: "Manhã/Noite",
-    maxAlunos: 20,
-    dataInicio: "01/01/2026",
-    materiais: "",
+    titulo: "",
+    descricao: "",
+    imagemUrl: "",
+    nivel: "iniciante",
+    duracao: 40,
+    professorId: professorId,
+    categoria: "",
+    tags: [],
+    secoes: []
   });
   const [salvo, setSalvo] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState(null);
 
   function set(field) {
     return (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
   }
 
-  function handleSalvar() {
-    setSalvo(true);
-    setTimeout(() => {
-      setSalvo(false);
-      navigate("/professor/dashboard");
-    }, 1800);
+  async function handleSalvar() {
+    setLoading(true);
+    setErro(null);
+    
+    try {
+      await cursosService.criar(form);
+      setSalvo(true);
+      setTimeout(() => {
+        setSalvo(false);
+        navigate("/professor/dashboard");
+      }, 1800);
+    } catch (error) {
+      setErro(error.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -101,58 +119,64 @@ export default function GerenciarModulos() {
           <div className="bg-surface-card rounded-card shadow-card w-full max-w-2xl p-10 animate-fade-up">
 
             <h2 className="font-display text-2xl font-bold text-ink mb-8">
-              Gerenciamento de Módulos e Aulas
+              Gerenciamento de Cursos
             </h2>
 
             {salvo ? (
               <div className="flex flex-col items-center gap-3 py-10">
                 <span className="text-5xl">✅</span>
-                <p className="font-bold text-lg text-ink">Módulo salvo com sucesso!</p>
+                <p className="font-bold text-lg text-ink">Curso salvo com sucesso!</p>
                 <p className="text-sm text-ink-muted">Redirecionando…</p>
               </div>
             ) : (
               <div className="flex flex-col gap-5">
+                {erro && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                    {erro}
+                  </div>
+                )}
 
-                {/* Linha 1: Módulo + Aula */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-ink uppercase tracking-wide">
-                      Nome do Módulo
-                    </label>
-                    <input
-                      placeholder="ex: Confeitaria Básica"
-                      value={form.modulo}
-                      onChange={set("modulo")}
-                      className="w-full bg-surface-input border border-border rounded-btn px-4 py-3 text-sm text-ink placeholder:text-ink-faint outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-ink uppercase tracking-wide">
-                      Nome da Aula
-                    </label>
-                    <input
-                      placeholder="ex: Aula 03"
-                      value={form.aula}
-                      onChange={set("aula")}
-                      className="w-full bg-surface-input border border-border rounded-btn px-4 py-3 text-sm text-ink placeholder:text-ink-faint outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition"
-                    />
-                  </div>
+                {/* Linha 1: Título */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-ink uppercase tracking-wide">
+                    Título do Curso
+                  </label>
+                  <input
+                    placeholder="ex: Confeitaria Básica"
+                    value={form.titulo}
+                    onChange={set("titulo")}
+                    className="w-full bg-surface-input border border-border rounded-btn px-4 py-3 text-sm text-ink placeholder:text-ink-faint outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition"
+                  />
                 </div>
 
-                {/* Linha 2: Período + Máx. alunos */}
+                {/* Linha 2: Descrição */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-ink uppercase tracking-wide">
+                    Descrição
+                  </label>
+                  <textarea
+                    placeholder="Descrição do curso..."
+                    value={form.descricao}
+                    onChange={set("descricao")}
+                    rows={3}
+                    className="w-full bg-surface-input border border-border rounded-btn px-4 py-3 text-sm text-ink placeholder:text-ink-faint outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition resize-none"
+                  />
+                </div>
+
+                {/* Linha 3: Nível + Duração */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-bold text-ink uppercase tracking-wide">
-                      Período
+                      Nível
                     </label>
                     <div className="relative">
                       <select
-                        value={form.periodo}
-                        onChange={set("periodo")}
+                        value={form.nivel}
+                        onChange={set("nivel")}
                         className="select-custom w-full"
                       >
-                        {PERIODOS.map((p) => (
-                          <option key={p} value={p}>{p}</option>
+                        {NIVEIS.map((n) => (
+                          <option key={n} value={n}>{n}</option>
                         ))}
                       </select>
                     </div>
@@ -160,71 +184,52 @@ export default function GerenciarModulos() {
 
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-bold text-ink uppercase tracking-wide">
-                      Número máximo de alunos
+                      Duração (horas)
                     </label>
-                    <div className="flex items-stretch border border-border rounded-btn overflow-hidden bg-surface-input">
-                      <input
-                        type="number"
-                        value={form.maxAlunos}
-                        onChange={set("maxAlunos")}
-                        className="flex-1 bg-transparent px-4 py-3 text-sm text-ink outline-none focus:border-brand transition"
-                      />
-                      <div className="flex flex-col border-l border-border">
-                        <button
-                          onClick={() => setForm((p) => ({ ...p, maxAlunos: p.maxAlunos + 1 }))}
-                          className="flex-1 px-3 text-ink-muted hover:text-ink hover:bg-surface-input transition text-xs font-bold"
-                        >
-                          +
-                        </button>
-                        <button
-                          onClick={() => setForm((p) => ({ ...p, maxAlunos: Math.max(1, p.maxAlunos - 1) }))}
-                          className="flex-1 px-3 text-ink-muted hover:text-ink hover:bg-surface-input transition text-xs font-bold border-t border-border"
-                        >
-                          −
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Linha 3: Data de Início */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-ink uppercase tracking-wide">
-                    Data de Início
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint text-base">📅</span>
                     <input
-                      type="text"
-                      placeholder="DD/MM/AAAA"
-                      value={form.dataInicio}
-                      onChange={set("dataInicio")}
-                      className="w-full bg-surface-input border border-border rounded-btn pl-10 pr-4 py-3 text-sm text-ink placeholder:text-ink-faint outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition"
+                      type="number"
+                      value={form.duracao}
+                      onChange={set("duracao")}
+                      className="w-full bg-surface-input border border-border rounded-btn px-4 py-3 text-sm text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition"
                     />
                   </div>
                 </div>
 
-                {/* Linha 4: Materiais */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-ink uppercase tracking-wide">
-                    Lista de materiais necessários
-                  </label>
-                  <textarea
-                    placeholder="Dólmã do Chef, Fouet..."
-                    value={form.materiais}
-                    onChange={set("materiais")}
-                    rows={4}
-                    className="w-full bg-surface-input border border-border rounded-btn px-4 py-3 text-sm text-ink placeholder:text-ink-faint outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition resize-none"
-                  />
+                {/* Linha 4: Categoria + Imagem */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-ink uppercase tracking-wide">
+                      Categoria
+                    </label>
+                    <input
+                      placeholder="ex: Confeitaria"
+                      value={form.categoria}
+                      onChange={set("categoria")}
+                      className="w-full bg-surface-input border border-border rounded-btn px-4 py-3 text-sm text-ink placeholder:text-ink-faint outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-ink uppercase tracking-wide">
+                      URL da Imagem
+                    </label>
+                    <input
+                      placeholder="https://exemplo.com/imagem.jpg"
+                      value={form.imagemUrl}
+                      onChange={set("imagemUrl")}
+                      className="w-full bg-surface-input border border-border rounded-btn px-4 py-3 text-sm text-ink placeholder:text-ink-faint outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition"
+                    />
+                  </div>
                 </div>
 
                 {/* Botões */}
                 <div className="flex items-center gap-3 mt-2">
                   <button
                     onClick={handleSalvar}
-                    className="bg-brand hover:bg-brand-dark text-white font-bold text-sm px-8 py-3.5 rounded-btn transition-all duration-200 active:scale-95"
+                    disabled={loading}
+                    className="bg-brand hover:bg-brand-dark text-white font-bold text-sm px-8 py-3.5 rounded-btn transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    SALVAR
+                    {loading ? "SALVANDO..." : "SALVAR"}
                   </button>
                   <button
                     onClick={() => navigate("/professor/dashboard")}

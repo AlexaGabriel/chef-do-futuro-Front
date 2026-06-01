@@ -1,23 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-const ALUNOS_MOCK = [
-  { nome: "Alice Pereira",  turma: "Confeitaria Avançada",     data: "10/10/2023 09:00", status: "Aguardando" },
-  { nome: "Ben Chen",       turma: "Introdução à Panificação", data: "10/10/2023 09:45", status: "Aguardando" },
-  { nome: "Carla Davis",    turma: "Culinária Mediterrânea",   data: "10/10/2023 10:30", status: "Aguardando" },
-  { nome: "Luna Gusralt",   turma: "Introdução à Panificação", data: "10/10/2023 10:35", status: "Aguardando" },
-  { nome: "Martin Biden",   turma: "Culinária Mediterrânea",   data: "10/10/2023 10:30", status: "Aguardando" },
-  { nome: "Jani Polay",     turma: "Introdução à Panificação", data: "10/10/2023 10:35", status: "Aguardando" },
-  { nome: "Rafael Torres",  turma: "Confeitaria Avançada",     data: "11/10/2023 08:00", status: "Aguardando" },
-  { nome: "Mia Santos",     turma: "Culinária Mediterrânea",   data: "11/10/2023 09:15", status: "Aguardando" },
-  { nome: "João Ferreira",  turma: "Introdução à Panificação", data: "11/10/2023 10:00", status: "Aguardando" },
-  { nome: "Clara Nunes",    turma: "Confeitaria Avançada",     data: "11/10/2023 11:00", status: "Aguardando" },
-  { nome: "Pedro Alves",    turma: "Culinária Mediterrânea",   data: "12/10/2023 08:30", status: "Aguardando" },
-  { nome: "Sofia Lima",     turma: "Introdução à Panificação", data: "12/10/2023 09:00", status: "Aguardando" },
-  { nome: "Lucas Moura",    turma: "Confeitaria Avançada",     data: "12/10/2023 10:45", status: "Aguardando" },
-  { nome: "Ana Beatriz",    turma: "Culinária Mediterrânea",   data: "12/10/2023 11:30", status: "Aguardando" },
-  { nome: "Bruno Costa",    turma: "Introdução à Panificação", data: "13/10/2023 08:00", status: "Aguardando" },
-];
+import alunosService from "../services/alunosService";
 
 const TURMAS = ["Todas", "Confeitaria Avançada", "Introdução à Panificação", "Culinária Mediterrânea"];
 const POR_PAGINA = 6;
@@ -27,21 +10,42 @@ export default function ListaEspera() {
   const [busca, setBusca]       = useState("");
   const [turma, setTurma]       = useState("Todas");
   const [pagina, setPagina]     = useState(1);
-  const [alunos, setAlunos]     = useState(ALUNOS_MOCK);
+  const [alunos, setAlunos]     = useState([]);
   const [visualizar, setVisualizar] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function carregarAlunos() {
+      try {
+        const response = await alunosService.listar();
+        setAlunos(response.dados || []);
+      } catch (error) {
+        console.error("Erro ao carregar alunos:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    carregarAlunos();
+  }, []);
 
   // Filtros
   const filtrados = alunos.filter((a) => {
-    const matchBusca = a.nome.toLowerCase().includes(busca.toLowerCase());
-    const matchTurma = turma === "Todas" || a.turma === turma;
+    const matchBusca = a.nome?.toLowerCase().includes(busca.toLowerCase());
+    const matchTurma = turma === "Todas" || a.turmas?.includes(turma);
     return matchBusca && matchTurma;
   });
 
   const totalPaginas = Math.ceil(filtrados.length / POR_PAGINA);
   const paginados    = filtrados.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA);
 
-  function excluir(nome) {
-    setAlunos((prev) => prev.filter((a) => a.nome !== nome));
+  async function excluir(id) {
+    try {
+      await alunosService.deletar(id);
+      setAlunos((prev) => prev.filter((a) => a._id !== id && a.id !== id));
+    } catch (error) {
+      console.error("Erro ao excluir aluno:", error);
+    }
   }
 
   return (
@@ -101,7 +105,13 @@ export default function ListaEspera() {
               </tr>
             </thead>
             <tbody>
-              {paginados.length === 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-10 text-ink-muted text-sm">
+                    Carregando alunos...
+                  </td>
+                </tr>
+              ) : paginados.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="text-center py-10 text-ink-muted text-sm">
                     Nenhum aluno encontrado.
@@ -109,13 +119,17 @@ export default function ListaEspera() {
                 </tr>
               ) : (
                 paginados.map((aluno, i) => (
-                  <tr key={i} className="border-b border-border last:border-0 hover:bg-surface-input transition-colors duration-100">
+                  <tr key={aluno._id || aluno.id || i} className="border-b border-border last:border-0 hover:bg-surface-input transition-colors duration-100">
                     <td className="px-5 py-4 font-medium text-ink">{aluno.nome}</td>
-                    <td className="px-5 py-4 text-ink-muted">{aluno.turma}</td>
-                    <td className="px-5 py-4 text-ink-muted">{aluno.data}</td>
+                    <td className="px-5 py-4 text-ink-muted">{aluno.turmas?.join(", ") || "Nenhuma turma"}</td>
+                    <td className="px-5 py-4 text-ink-muted">{new Date(aluno.dataNascimento).toLocaleDateString() || "N/A"}</td>
                     <td className="px-5 py-4">
-                      <span className="bg-yellow-100 text-yellow-700 font-bold text-xs px-3 py-1 rounded-full">
-                        {aluno.status}
+                      <span className={`font-bold text-xs px-3 py-1 rounded-full ${
+                        aluno.status === 'ativo' ? 'bg-green-100 text-green-700' :
+                        aluno.status === 'inativo' ? 'bg-gray-100 text-gray-700' :
+                        'bg-yellow-100 text-yellow-700'
+                      }`}>
+                        {aluno.status || 'aguardando'}
                       </span>
                     </td>
                     <td className="px-5 py-4">
@@ -133,7 +147,7 @@ export default function ListaEspera() {
                         </button>
                         {/* Excluir */}
                         <button
-                          onClick={() => excluir(aluno.nome)}
+                          onClick={() => excluir(aluno._id || aluno.id)}
                           className="w-8 h-8 bg-brand hover:bg-brand-dark text-white rounded-btn flex items-center justify-center text-sm transition-all duration-150 active:scale-95"
                         >
                           🗑

@@ -9,15 +9,15 @@ export default function Topnav({ titulo, progresso }) {
       {/* Esquerda: título da aula (opcional) */}
       <div className="flex items-center">
         {titulo && (
-          <h2 className="text-white font-display text-sm font-bold tracking-widest uppercase">
+          <h2 className="text-white font-body text-sm font-black tracking-widest uppercase">
             {titulo}
           </h2>
         )}
       </div>
 
       {/* Centro: logo */}
-      <span className="absolute left-1/2 -translate-x-1/2 font-display text-brand text-sm leading-tight text-center pointer-events-none">
-        Chef do<br />Futuro
+      <span className="absolute left-1/2 -translate-x-1/2 font-body text-[#f5ede6] text-2xl font-black tracking-wide text-center pointer-events-none">
+        Chef do Futuro
       </span>
 
       {/* Direita */}

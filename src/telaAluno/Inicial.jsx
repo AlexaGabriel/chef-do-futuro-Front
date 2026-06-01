@@ -9,7 +9,7 @@ const CURSOS_RAPIDOS = [
   { nome: "Sushi",          label: "Curso 2", progresso: 35, img: "https://images.unsplash.com/photo-1553621042-f6e147245754?w=300&q=80" },
   { nome: "Tacos",          label: "Curso 3", progresso: 10, img: "https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?w=300&q=80" },
   { nome: "Macarons",       label: "Curso 4", progresso: 80, img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?w=300&q=80" },
-  { nome: "Frango Assado",  label: "Curso 5", progresso: 20, img: "https://images.unsplash.com/photo-1598103442097-8b74394b95c1?w=300&q=80" },
+  { nome: "Frango Assado",  label: "Curso 5", progresso: 20, img: "https://images.unsplash.com/photo-1518492104633-130d0cc84637?w=300&q=80" },
   { nome: "Pão Artesanal",  label: "Curso 6", progresso: 50, img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300&q=80" },
 ];
 
@@ -25,8 +25,8 @@ export default function Inicial() {
         <div className="bg-surface-card rounded-card shadow-sm grid grid-cols-3 overflow-hidden min-h-52">
           {/* Coluna esquerda */}
           <div className="flex flex-col justify-center gap-4 p-8">
-            <h3 className="font-display text-2xl font-bold leading-snug">
-              Continue onde<br />você parou
+            <h3 className="font-body text-2xl font-black leading-snug tracking-wide">
+              Continue onde<br /> você parou
             </h3>
             <button
               onClick={() => navigate("/aula/1")}
@@ -53,7 +53,7 @@ export default function Inicial() {
           {/* Info direita */}
           <div className="flex flex-col justify-center gap-3 p-8">
             <Badge variant="default">Em Progresso</Badge>
-            <h4 className="font-display text-lg font-bold leading-snug">
+            <h4 className="font-body text-base font-black leading-snug tracking-wide">
               MÓDULO 3: ARROZ E FEIJÃO 2
             </h4>
             <p className="text-sm text-ink-muted leading-relaxed">

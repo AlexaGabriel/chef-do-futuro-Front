@@ -11,14 +11,14 @@ export default function Sidebar() {
   const navigate = useNavigate();
 
   return (
-    <aside className="w-52 shrink-0 min-h-screen bg-sidebar flex flex-col">
+    <aside className="w-56 shrink-0 min-h-screen bg-sidebar flex flex-col">
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 py-5 border-b border-white/10 mb-4">
         <div className="w-9 h-9 bg-brand rounded-xl flex items-center justify-center text-lg shrink-0">
           🍳
         </div>
-        <span className="font-display text-white text-sm leading-tight">
-          Escola<br />Chef do Futuro
+        <span className="font-body text-white text-sm font-black tracking-wide whitespace-nowrap">
+          Escola Chef do Futuro
         </span>
       </div>
 

@@ -20,12 +20,12 @@ export default function Login() {
       return;
     }
     setErro("");
-  }
 
-  if (form.email.includes("professor")) {
-    navigate("/professor/dashboard");
-  } else {
-    navigate("/inicio");
+    if (form.email.includes("professor")) {
+      navigate("/professor/dashboard");
+    } else {
+      navigate("/inicio");
+    }
   }
 
   return (

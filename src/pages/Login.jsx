@@ -33,17 +33,15 @@ export default function Login() {
     setLoading(true);
 
     try {
-      let response;
-      
       // Chama o serviço de login apropriado baseado no tipo de usuário
       if (userType === 'aluno') {
-        response = await authService.loginAluno(form.email, form.senha);
+        await authService.loginAluno(form.email, form.senha);
         navigate("/inicio");
       } else if (userType === 'professor') {
-        response = await authService.loginProfessor(form.email, form.senha);
+        await authService.loginProfessor(form.email, form.senha);
         navigate("/professor/dashboard");
       } else if (userType === 'coordenador') {
-        response = await authService.loginCoordenador(form.email, form.senha);
+        await authService.loginCoordenador(form.email, form.senha);
         navigate("/coordenador/dashboard");
       }
     } catch (error) {

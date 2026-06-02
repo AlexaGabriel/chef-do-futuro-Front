@@ -4,9 +4,14 @@ const authService = {
   // Login de Aluno
   loginAluno: async (email, senha) => {
     const response = await api.post('/api/v1/auth/aluno/login', { email, senha });
-    if (response.dados?.token) {
-      localStorage.setItem('authToken', response.dados.token);
-      localStorage.setItem('usuario', JSON.stringify(response.dados.usuario));
+    
+    // Tenta diferentes estruturas de resposta
+    const token = response.dados?.token || response.token;
+    const usuario = response.dados?.usuario || response.usuario || response.aluno;
+    
+    if (token) {
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('usuario', JSON.stringify(usuario));
       localStorage.setItem('userRole', 'aluno');
     }
     return response;
@@ -15,9 +20,13 @@ const authService = {
   // Login de Professor
   loginProfessor: async (email, senha) => {
     const response = await api.post('/api/v1/auth/professor/login', { email, senha });
-    if (response.dados?.token) {
-      localStorage.setItem('authToken', response.dados.token);
-      localStorage.setItem('usuario', JSON.stringify(response.dados.usuario));
+    
+    const token = response.dados?.token || response.token;
+    const usuario = response.dados?.usuario || response.usuario || response.professor;
+    
+    if (token) {
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('usuario', JSON.stringify(usuario));
       localStorage.setItem('userRole', 'professor');
     }
     return response;
@@ -26,9 +35,13 @@ const authService = {
   // Login de Coordenador
   loginCoordenador: async (email, senha) => {
     const response = await api.post('/api/v1/auth/coordenador/login', { email, senha });
-    if (response.dados?.token) {
-      localStorage.setItem('authToken', response.dados.token);
-      localStorage.setItem('usuario', JSON.stringify(response.dados.usuario));
+    
+    const token = response.dados?.token || response.token;
+    const usuario = response.dados?.usuario || response.usuario || response.coordenador;
+    
+    if (token) {
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('usuario', JSON.stringify(usuario));
       localStorage.setItem('userRole', 'coordenador');
     }
     return response;
@@ -48,6 +61,12 @@ const authService = {
 
   // Obter usuário atual
   getCurrentUser: () => {
+    const userStr = localStorage.getItem('usuario');
+    return userStr ? JSON.parse(userStr) : null;
+  },
+
+  // Obter usuário (alias para compatibilidade)
+  getUser: () => {
     const userStr = localStorage.getItem('usuario');
     return userStr ? JSON.parse(userStr) : null;
   },

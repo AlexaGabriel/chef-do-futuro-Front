@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
+import authService from "../services/authService";
 
 const NAV_ITEMS = [
   { to: "/inicio",        label: "Painel",        icon: "🏠" },
@@ -9,6 +10,11 @@ const NAV_ITEMS = [
 
 export default function Sidebar() {
   const navigate = useNavigate();
+
+  function handleLogout() {
+    authService.logout();
+    navigate("/login");
+  }
 
   return (
     <aside className="w-56 shrink-0 min-h-screen bg-sidebar flex flex-col">
@@ -45,7 +51,7 @@ export default function Sidebar() {
       {/* Sair */}
       <div className="px-3 pb-6">
         <button
-          onClick={() => navigate("/login")}
+          onClick={handleLogout}
           className="flex items-center gap-2.5 px-3 py-2.5 w-full rounded-btn
                      text-sm text-white/40 hover:text-white/70
                      hover:bg-white/[.06] transition-all duration-150"

@@ -21,7 +21,9 @@ export default function CadastroAluno() {
     cpf: "", 
     telefone: "", 
     nivelCulinaria: "iniciante",
-    observacoes: ""
+    observacoes: "",
+    senha: "",
+    confirmarSenha: ""
   });
   const [enviado, setEnviado] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -36,8 +38,23 @@ export default function CadastroAluno() {
     setLoading(true);
     setErro(null);
 
+    // Validar senhas
+    if (form.senha.length < 6) {
+      setErro("A senha deve ter no mínimo 6 caracteres.");
+      setLoading(false);
+      return;
+    }
+
+    if (form.senha !== form.confirmarSenha) {
+      setErro("As senhas não coincidem.");
+      setLoading(false);
+      return;
+    }
+
     try {
-      await alunosService.criar(form);
+      // Remove confirmarSenha antes de enviar
+      const { confirmarSenha, ...dadosEnvio } = form;
+      await alunosService.criar(dadosEnvio);
       setEnviado(true);
       setTimeout(() => navigate("/login"), 2200);
     } catch (error) {
@@ -87,6 +104,12 @@ export default function CadastroAluno() {
             <div className="grid grid-cols-2 gap-4">
               <Select label="Nível Culinária" id="nivel"  placeholder="Selecionar Nível"  options={NIVEIS} value={form.nivelCulinaria}  onChange={set("nivelCulinaria")}  required />
               <Input label="Observações" id="obs" type="text" placeholder="Observações adicionais" value={form.observacoes} onChange={set("observacoes")} />
+            </div>
+
+            {/* Linha 4 - Senha */}
+            <div className="grid grid-cols-2 gap-4">
+              <Input label="Senha" id="senha" type="password" placeholder="Mínimo 6 caracteres" value={form.senha} onChange={set("senha")} required />
+              <Input label="Confirmar Senha" id="confirmarSenha" type="password" placeholder="Digite a senha novamente" value={form.confirmarSenha} onChange={set("confirmarSenha")} required />
             </div>
 
             <Button type="submit" fullWidth className="mt-2" disabled={loading}>

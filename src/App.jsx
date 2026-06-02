@@ -10,6 +10,7 @@ import ProfessorDashboard from "./telaProfessor/DashboardProfessor";
 import GerenciarModulos from "./telaProfessor/GerenciarModulos";
 import ListaEspera from "./telaProfessor/ListaEspera";
 import Frequencia from "./telaProfessor/Frequencia";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   return (
@@ -22,16 +23,44 @@ export default function App() {
         <Route path="/cadastro-aluno"      element={<CadastroAluno />} />
         <Route path="/cadastro-professor"  element={<CadastroProfessor />} />
 
-        {/* Área do aluno */}
-        <Route path="/inicio"              element={<Inicial />} />
-        <Route path="/catalogo"            element={<Catalogo />} />
-        <Route path="/aula/:id"            element={<Aula />} />
+        {/* Área do aluno - Protegida */}
+        <Route path="/inicio"              element={
+          <ProtectedRoute allowedRoles={['aluno']}>
+            <Inicial />
+          </ProtectedRoute>
+        } />
+        <Route path="/catalogo"            element={
+          <ProtectedRoute allowedRoles={['aluno']}>
+            <Catalogo />
+          </ProtectedRoute>
+        } />
+        <Route path="/aula/:id"            element={
+          <ProtectedRoute allowedRoles={['aluno']}>
+            <Aula />
+          </ProtectedRoute>
+        } />
 
-        {/* Área do professor */}
-        <Route path="/professor/dashboard" element={<ProfessorDashboard />} />
-        <Route path="/professor/cursos" element={<GerenciarModulos />} />
-        <Route path="/professor/lista-espera" element={<ListaEspera />} />
-        <Route path="/professor/frequencia" element={<Frequencia />} />
+        {/* Área do professor - Protegida */}
+        <Route path="/professor/dashboard" element={
+          <ProtectedRoute allowedRoles={['professor']}>
+            <ProfessorDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/professor/cursos" element={
+          <ProtectedRoute allowedRoles={['professor']}>
+            <GerenciarModulos />
+          </ProtectedRoute>
+        } />
+        <Route path="/professor/lista-espera" element={
+          <ProtectedRoute allowedRoles={['professor']}>
+            <ListaEspera />
+          </ProtectedRoute>
+        } />
+        <Route path="/professor/frequencia" element={
+          <ProtectedRoute allowedRoles={['professor']}>
+            <Frequencia />
+          </ProtectedRoute>
+        } />
 
         {/* Páginas futuras */}
         <Route path="/meus-cursos"         element={<Navigate to="/inicio" replace />} />

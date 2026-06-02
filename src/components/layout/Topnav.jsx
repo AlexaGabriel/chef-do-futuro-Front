@@ -1,8 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import ProgressBar from "../ui/ProgressBar";
+import authService from "../../services/authService";
 
 export default function Topnav({ titulo, progresso }) {
   const navigate = useNavigate();
+  const user = authService.getUser();
+  const userName = user?.nome || "Usuário";
 
   return (
     <header className="sticky top-0 z-50 h-16 bg-[#1a1a1a] flex items-center justify-between px-8 shrink-0">
@@ -31,7 +34,7 @@ export default function Topnav({ titulo, progresso }) {
           </div>
         )}
 
-        <span className="text-white/60 text-sm">Olá,</span>
+        <span className="text-white/60 text-sm">Olá, {userName}</span>
 
         {/* Avatar */}
         <div className="w-9 h-9 rounded-full bg-brand-light flex items-center justify-center text-base shrink-0">

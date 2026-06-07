@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { maskCPF, maskTelefone, validarCPF, validarTelefone } from "../utils/masks";
 import AuthLayout  from "../layout/AuthLayout";
 import Input       from "../components/ui/Input";
 import Select      from "../components/ui/Select";
@@ -14,6 +15,7 @@ const ESPECIALIDADES = [
 
 export default function CadastroProfessor() {
   const navigate = useNavigate();
+  const [erro, setErro] = useState("");
   const [form, setForm] = useState({
     email: "", 
     nome: "", 
@@ -84,7 +86,7 @@ export default function CadastroProfessor() {
       </div>
 
       <div className="bg-surface-card rounded-card shadow-card w-full max-w-2xl p-12 mt-14 animate-fade-up">
-        <h1 className="font-display text-3xl font-bold text-ink text-center mb-1">Cadastrar-se</h1>
+        <h1 className="font-body text-3xl font-black text-ink text-center mb-1">Cadastrar-se</h1>
         <p className="text-sm text-ink-muted text-center mb-8">
           Junte-se à nossa equipe de instrutores
         </p>

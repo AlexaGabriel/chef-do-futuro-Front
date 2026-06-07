@@ -1,58 +1,81 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // ── Sidebar do Professor ──────────────────────────────────────────────────────
 const NAV_ITEMS = [
-  { label: "Painel",      icon: "🏠", to: "/professor/dashboard" },
-  { label: "Cursos",      icon: "📖", to: "/professor/cursos" },
-  { label: "Alunos",      icon: "👥", to: "/professor/alunos" },
-  { label: "Turmas",      icon: "🎓", to: "/professor/turmas" },
-  { label: "Horários",    icon: "📅", to: "/professor/horarios" },
+  { label: "Painel",          icon: "🏠", to: "/professor/dashboard" },
+  { label: "Cursos",          icon: "📖", to: "/professor/cursos" },
+  { label: "Alunos",          icon: "👥", to: "/professor/alunos" },
+  { label: "Turmas",          icon: "🎓", to: "/professor/turmas" },
+  { label: "Horários",        icon: "📅", to: "/professor/horarios" },
   { label: "Lista de Espera", icon: "⏳", to: "/professor/lista-espera" },
-  { label: "Relatórios",  icon: "📊", to: "/professor/relatorios" },
+  { label: "Relatórios",      icon: "📊", to: "/professor/relatorios" },
 ];
 
 function ProfessorSidebar({ activeLabel = "Painel" }) {
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <aside className="w-52 shrink-0 min-h-screen bg-sidebar flex flex-col">
-      {/* Logo */}
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-white/10 mb-4">
-        <div className="w-9 h-9 bg-brand rounded-xl flex items-center justify-center text-lg shrink-0">
-          🍳
+    <>
+      {/* Mobile hamburger */}
+      <button
+        aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen((p) => !p)}
+        className="lg:hidden fixed top-4 left-4 z-50 w-10 h-10 flex flex-col items-center justify-center gap-1.5
+                   bg-sidebar rounded-btn shadow-card"
+      >
+        <span className={`block w-5 h-0.5 bg-white transition-all duration-200 ${isOpen ? "rotate-45 translate-y-2" : ""}`} />
+        <span className={`block w-5 h-0.5 bg-white transition-all duration-200 ${isOpen ? "opacity-0" : ""}`} />
+        <span className={`block w-5 h-0.5 bg-white transition-all duration-200 ${isOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+      </button>
+
+      {/* Overlay */}
+      {isOpen && (
+        <div aria-hidden="true" onClick={() => setIsOpen(false)} className="lg:hidden fixed inset-0 z-30 bg-black/50" />
+      )}
+
+      <aside
+        className={`
+          fixed inset-y-0 left-0 z-40 w-64 bg-sidebar flex flex-col
+          transform transition-transform duration-200
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}
+          lg:relative lg:translate-x-0 lg:w-52 lg:shrink-0 lg:min-h-screen
+        `}
+      >
+        <div className="flex items-center gap-3 px-5 py-5 border-b border-white/10 mb-4">
+          <div className="w-9 h-9 bg-brand rounded-xl flex items-center justify-center text-lg shrink-0">🍳</div>
+          <span className="font-display text-white text-sm leading-tight">Escola<br />Chef do Futuro</span>
         </div>
-        <span className="font-display text-white text-sm leading-tight">
-          Escola<br />Chef do Futuro
-        </span>
-      </div>
 
-      {/* Nav */}
-      <nav className="flex flex-col gap-1 px-3 flex-1">
-        {NAV_ITEMS.map((item) => (
+        <nav className="flex flex-col gap-1 px-3 flex-1" aria-label="Menu do professor">
+          {NAV_ITEMS.map((item) => (
+            <button
+              key={item.label}
+              onClick={() => { navigate(item.to); setIsOpen(false); }}
+              className={`flex items-center gap-2.5 px-3 py-3 rounded-btn text-sm font-body transition-all duration-150 w-full text-left min-h-[44px]
+                ${activeLabel === item.label
+                  ? "bg-brand text-white font-bold"
+                  : "text-white/60 hover:text-white hover:bg-white/[.06]"
+                }`}
+            >
+              <span className="text-base">{item.icon}</span>
+              {item.label}
+            </button>
+          ))}
+        </nav>
+
+        <div className="px-3 pb-6">
           <button
-            key={item.label}
-            onClick={() => navigate(item.to)}
-            className={`flex items-center gap-2.5 px-3 py-2.5 rounded-btn text-sm font-body transition-all duration-150 w-full text-left
-              ${activeLabel === item.label
-                ? "bg-brand text-white font-bold"
-                : "text-white/60 hover:text-white hover:bg-white/[.06]"
-              }`}
+            onClick={() => navigate("/login")}
+            className="flex items-center gap-2.5 px-3 py-3 w-full min-h-[44px] rounded-btn text-sm text-white/40 hover:text-white/70 hover:bg-white/[.06] transition-all duration-150"
           >
-            <span className="text-base">{item.icon}</span>
-            {item.label}
+            <span>🚪</span> Sair
           </button>
-        ))}
-      </nav>
-
-      {/* Sair */}
-      <div className="px-3 pb-6">
-        <button
-          onClick={() => navigate("/login")}
-          className="flex items-center gap-2.5 px-3 py-2.5 w-full rounded-btn text-sm text-white/40 hover:text-white/70 hover:bg-white/[.06] transition-all duration-150"
-        >
-          <span>🚪</span> Sair
-        </button>
-      </div>
-    </aside>
+        </div>
+      </aside>
+    </>
   );
 }
 
@@ -108,65 +131,76 @@ export default function ProfessorDashboard() {
   const nomeProfessor = localStorage.getItem("professorNome") || "Professor";
 
   return (
-    <div className="flex min-h-screen bg-surface font-body">
+    <div className="flex min-h-screen bg-surface font-body overflow-x-hidden">
       <ProfessorSidebar activeLabel="Painel" />
 
-      <div className="flex flex-col flex-1 min-w-0">
+      <div className="flex flex-col flex-1 min-w-0 w-full">
         {/* Topnav */}
-        <header className="h-16 bg-surface-card border-b border-border flex items-center justify-between px-8 shrink-0 shadow-sm">
-          {/* Busca */}
-          <div className="relative w-80">
+        <header className="h-16 bg-surface-card border-b border-border flex items-center justify-between px-4 sm:px-8 shrink-0 shadow-sm">
+          {/* Espaçador para o hamburger em mobile */}
+          <div className="w-10 lg:hidden" aria-hidden="true" />
+
+          {/* Busca — escondida em mobile pequeno, visível em sm+ */}
+          <div className="relative hidden sm:block w-full max-w-xs">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint text-sm">🔍</span>
             <input
-              placeholder="Pesquisar cursos, alunos ou recursos..."
+              placeholder="Pesquisar cursos, alunos..."
               className="w-full bg-surface-input border border-border rounded-btn pl-9 pr-4 py-2.5 text-sm text-ink placeholder:text-ink-faint outline-none focus:border-brand transition"
             />
           </div>
 
           {/* Perfil */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 ml-auto">
             <div className="relative">
-              <button className="text-ink-muted hover:text-ink text-xl transition">🔔</button>
+              <button aria-label="Notificações" className="text-ink-muted hover:text-ink text-xl transition w-10 h-10 flex items-center justify-center">🔔</button>
               <span className="absolute -top-1 -right-1 w-4 h-4 bg-brand rounded-full text-white text-[9px] flex items-center justify-center font-bold">2</span>
             </div>
-            <span className="text-sm font-bold text-ink">{nomeProfessor}</span>
-            <div className="w-9 h-9 rounded-full bg-brand-light overflow-hidden flex items-center justify-center text-xl">
+            <span className="hidden md:block text-sm font-bold text-ink truncate max-w-[120px]">{nomeProfessor}</span>
+            <div className="w-9 h-9 rounded-full bg-brand-light overflow-hidden flex items-center justify-center text-xl shrink-0" aria-hidden="true">
               👨‍🍳
             </div>
           </div>
         </header>
 
         {/* Conteúdo */}
-        <main className="flex-1 p-8 overflow-y-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
 
-          {/* Botões de ação */}
-          <div className="grid grid-cols-3 gap-4 mb-8 animate-fade-up">
+          {/* Botões de ação
+              Mobile:  1 coluna
+              sm:      3 colunas
+          */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8 animate-fade-up">
             <button
               onClick={() => navigate("/professor/frequencia")}
-              className="bg-surface-card border border-border rounded-btn py-4 text-sm font-bold text-ink hover:bg-surface-input hover:border-brand transition-all duration-200 shadow-sm">
+              className="bg-surface-card border border-border rounded-btn py-3.5 sm:py-4 text-sm font-bold text-ink
+                         hover:bg-surface-input hover:border-brand transition-all duration-200 shadow-sm min-h-[44px]"
+            >
               Registrar Frequência
             </button>
-            <button className="bg-surface-card border border-border rounded-btn py-4 text-sm font-bold text-ink hover:bg-surface-input hover:border-brand transition-all duration-200 shadow-sm">
+            <button className="bg-surface-card border border-border rounded-btn py-3.5 sm:py-4 text-sm font-bold text-ink
+                               hover:bg-surface-input hover:border-brand transition-all duration-200 shadow-sm min-h-[44px]">
               Lançar Notas
             </button>
-            <button
-              className="bg-brand hover:bg-brand-dark rounded-btn py-4 text-sm font-bold text-white transition-all duration-200 shadow-sm"
-            >
+            <button className="bg-brand hover:bg-brand-dark rounded-btn py-3.5 sm:py-4 text-sm font-bold text-white
+                               transition-all duration-200 shadow-sm min-h-[44px]">
               Enviar Comunicado
             </button>
           </div>
 
-          {/* Grid principal */}
-          <div className="grid grid-cols-2 gap-6 animate-fade-up-1">
+          {/* Grid principal
+              Mobile:  1 coluna
+              lg:      2 colunas
+          */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 animate-fade-up-1">
 
             {/* Tarefas Críticas */}
-            <div className="bg-surface-card rounded-card shadow-sm p-6 flex flex-col gap-4">
+            <div className="bg-surface-card rounded-card shadow-sm p-4 sm:p-6 flex flex-col gap-4">
               <h3 className="font-display text-lg font-bold text-ink">Tarefas Críticas e a Fazer</h3>
               {TAREFAS.map((t, i) => {
                 const c = COR_TAREFA[t.cor];
                 return (
-                  <div key={i} className={`border-l-4 ${c.border} ${c.bg} rounded-r-btn p-4 flex flex-col gap-1.5`}>
-                    <p className="text-xs font-black">
+                  <div key={i} className={`border-l-4 ${c.border} ${c.bg} rounded-r-btn p-3 sm:p-4 flex flex-col gap-1.5`}>
+                    <p className="text-xs font-black break-words">
                       <span className={c.badge}>{t.badge}</span>{" "}
                       <span className="text-ink">{t.titulo}</span>
                     </p>
@@ -185,16 +219,16 @@ export default function ProfessorDashboard() {
             </div>
 
             {/* Coluna direita */}
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4 sm:gap-6">
 
               {/* Resumo do Dia */}
-              <div className="bg-surface-card rounded-card shadow-sm p-6">
+              <div className="bg-surface-card rounded-card shadow-sm p-4 sm:p-6">
                 <h3 className="font-display text-lg font-bold text-ink mb-4">Resumo do Dia</h3>
                 <ul className="flex flex-col gap-3">
                   {RESUMO_DIA.map((item, i) => (
                     <li key={i} className="flex items-start gap-3 text-sm">
-                      <span className="w-2 h-2 rounded-full bg-ink-faint mt-1.5 shrink-0" />
-                      <span>
+                      <span className="w-2 h-2 rounded-full bg-ink-faint mt-1.5 shrink-0" aria-hidden="true" />
+                      <span className="break-words min-w-0">
                         <span className="font-bold text-ink">{item.hora}</span>
                         <span className="text-ink-muted"> - {item.desc}</span>
                       </span>
@@ -204,16 +238,16 @@ export default function ProfessorDashboard() {
               </div>
 
               {/* Centro de Comunicação */}
-              <div className="bg-surface-card rounded-card shadow-sm p-6 flex-1">
-                <div className="flex items-center justify-between mb-4">
+              <div className="bg-surface-card rounded-card shadow-sm p-4 sm:p-6 flex-1">
+                <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
                   <h3 className="font-display text-lg font-bold text-ink">Centro de Comunicação</h3>
-                  <span className="flex items-center gap-1.5 text-xs text-ink-muted bg-surface-input px-2.5 py-1 rounded-full">
+                  <span className="flex items-center gap-1.5 text-xs text-ink-muted bg-surface-input px-2.5 py-1 rounded-full whitespace-nowrap">
                     ✉️ 3 novas mensagens
                   </span>
                 </div>
                 <ul className="flex flex-col gap-3">
                   {MENSAGENS.map((m, i) => (
-                    <li key={i} className="text-xs leading-relaxed border-b border-border pb-2 last:border-0 last:pb-0">
+                    <li key={i} className="text-xs leading-relaxed border-b border-border pb-2 last:border-0 last:pb-0 break-words">
                       <span className="font-bold text-ink">{m.tipo}:</span>{" "}
                       <span className="text-ink-muted">{m.origem} - {m.assunto}</span>{" "}
                       <span className="text-ink-faint">Recebido: {m.tempo}</span>
@@ -224,19 +258,21 @@ export default function ProfessorDashboard() {
             </div>
           </div>
 
-          {/* KPIs */}
-          <div className="grid grid-cols-2 gap-4 mt-6 animate-fade-up-2">
+          {/* KPIs
+              Mobile:  1 coluna
+              sm:      2 colunas
+          */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 sm:mt-6 animate-fade-up-2">
             {/* Termômetro da Turma */}
-            <div className="bg-surface-card rounded-card shadow-sm p-6 flex items-center gap-6">
-              <div className="flex-1">
+            <div className="bg-surface-card rounded-card shadow-sm p-4 sm:p-6 flex items-center gap-4 sm:gap-6">
+              <div className="flex-1 min-w-0">
                 <p className="text-xs text-ink-muted uppercase tracking-wider font-bold mb-1">Termômetro da Turma</p>
-                <p className="font-display text-4xl font-black text-ink">
-                  85% <span className="text-brand text-2xl">↗</span>
+                <p className="font-display text-3xl sm:text-4xl font-black text-ink">
+                  85% <span className="text-brand text-xl sm:text-2xl">↗</span>
                 </p>
                 <p className="text-xs text-ink-muted mt-1">Pontuação Média de Engajamento do Aluno</p>
               </div>
-              {/* Donut simples */}
-              <svg width="64" height="64" viewBox="0 0 64 64">
+              <svg width="64" height="64" viewBox="0 0 64 64" className="shrink-0" aria-hidden="true">
                 <circle cx="32" cy="32" r="24" fill="none" stroke="#e0d9cf" strokeWidth="8" />
                 <circle
                   cx="32" cy="32" r="24" fill="none" stroke="#c0522a" strokeWidth="8"
@@ -248,16 +284,19 @@ export default function ProfessorDashboard() {
             </div>
 
             {/* Alerta de Evasão */}
-            <div className="bg-surface-card rounded-card shadow-sm p-6 flex items-center gap-6">
-              <div className="flex-1">
+            <div className="bg-surface-card rounded-card shadow-sm p-4 sm:p-6 flex items-center gap-4 sm:gap-6">
+              <div className="flex-1 min-w-0">
                 <p className="text-xs text-ink-muted uppercase tracking-wider font-bold mb-1">Alerta de Evasão</p>
-                <p className="font-display text-4xl font-black text-ink">04</p>
+                <p className="font-display text-3xl sm:text-4xl font-black text-ink">04</p>
                 <p className="text-xs text-ink-muted mt-1">Alunos em Risco Identificados</p>
               </div>
-              {/* Mini bar chart */}
-              <div className="flex items-end gap-1 h-12">
+              <div className="flex items-end gap-1 h-12 shrink-0" aria-hidden="true">
                 {[30, 55, 40, 70, 50, 85].map((h, i) => (
-                  <div key={i} className="w-3 rounded-sm" style={{ height: `${h}%`, backgroundColor: i === 5 ? "#c0522a" : "#e0d9cf" }} />
+                  <div
+                    key={i}
+                    className="w-3 rounded-sm"
+                    style={{ height: `${h}%`, backgroundColor: i === 5 ? "#c0522a" : "#e0d9cf" }}
+                  />
                 ))}
               </div>
             </div>

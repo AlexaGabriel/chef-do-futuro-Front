@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { maskCPF, maskTelefone, maskData, validarCPF, validarTelefone } from "../utils/masks";
 import AuthLayout from "../layout/AuthLayout";
 import Input    from "../components/ui/Input";
 import Select   from "../components/ui/Select";
@@ -12,8 +13,10 @@ const CURSOS = [
 ];
 const NIVEIS = ["iniciante", "intermediario", "avancado"];
 
+
 export default function CadastroAluno() {
   const navigate = useNavigate();
+  const [erro, setErro] = useState("");
   const [form, setForm] = useState({
     email: "", 
     nome: "", 
@@ -67,9 +70,8 @@ export default function CadastroAluno() {
   return (
     <AuthLayout>
       <div className="bg-surface-card rounded-card shadow-card w-full max-w-2xl p-12 animate-fade-up">
-        <h1 className="font-display text-3xl font-bold text-ink mb-1">
-          <span className="font-black">Registrar</span>{" "}
-          <span className="font-light text-ink-muted text-2xl">(Estudante)</span>
+        <h1 className="font-body text-3xl font-black text-ink mb-1">
+          Registrar <span className="font-light text-ink-muted text-2xl">(Estudante)</span>
         </h1>
         <p className="text-sm text-ink-muted mb-8">Preencha os dados para criar sua conta</p>
 

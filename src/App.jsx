@@ -5,6 +5,8 @@ import CadastroAluno from "./telaAluno/CadastroAluno";
 import CadastroProfessor from "./telaProfessor/CadastroProfessor";
 import Inicial from "./telaAluno/Inicial";
 import Catalogo          from "./telaAluno/Catalogo";
+import MeusCursos    from "./telaAluno/MeusCursos";
+import Configuracoes from "./telaAluno/Configuracoes";
 import Aula              from "./telaAluno/Aula";
 import ProfessorDashboard from "./telaProfessor/DashboardProfessor";
 import GerenciarModulos from "./telaProfessor/GerenciarModulos";
@@ -62,9 +64,14 @@ export default function App() {
           </ProtectedRoute>
         } />
 
-        {/* Páginas futuras */}
-        <Route path="/meus-cursos"         element={<Navigate to="/inicio" replace />} />
-        <Route path="/configuracoes"       element={<Navigate to="/inicio" replace />} />
+        {/* Área do professor */}
+        <Route path="/professor/dashboard" element={<ProfessorDashboard />} />
+        <Route path="/professor/cursos" element={<GerenciarModulos />} />
+        <Route path="/professor/lista-espera" element={<ListaEspera />} />
+        <Route path="/professor/frequencia" element={<Frequencia />} />
+
+        {/* Config e Notificações */}
+        <Route path="/configuracoes" element={<Configuracoes />} />
 
         <Route path="*"                    element={<Navigate to="/login" replace />} />
       </Routes>

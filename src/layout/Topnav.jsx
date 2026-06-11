@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import ProgressBar from "../ui/ProgressBar";
-import authService from "../../services/authService";
+import ProgressBar from "../components/ui/ProgressBar";
+import authService from "../services/authService";
 
 export default function Topnav({ titulo, progresso }) {
   const navigate = useNavigate();

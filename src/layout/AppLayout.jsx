@@ -1,5 +1,5 @@
 import Sidebar from "../components/Sidebar";
-import Topnav from "../components/layout/Topnav";
+import Topnav from "./Topnav";
 
 /**
  * AppLayout

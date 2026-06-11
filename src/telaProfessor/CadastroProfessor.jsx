@@ -30,7 +30,6 @@ export default function CadastroProfessor() {
   });
   const [enviado, setEnviado] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [erro, setErro] = useState(null);
 
   function set(field) {
     return (e) => {

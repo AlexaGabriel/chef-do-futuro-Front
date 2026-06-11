@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base URL from environment variable
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/';
+const API_URL = import.meta.env.VITE_API_URL || "https://chef-do-futuro-back.onrender.com/";
 
 // Create axios instance
 const api = axios.create({

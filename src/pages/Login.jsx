@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import AuthLayout from "../layout/AuthLayout";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
+import Icon from "../components/ui/Icon";
 import authService from "../services/authService";
 
 const USER_TYPES = [
-  { value: "aluno",       label: "Aluno",       icon: "🎓" },
-  { value: "professor",   label: "Professor",   icon: "👨‍🏫" },
-  { value: "coordenador", label: "Coordenador", icon: "👔" },
+  { value: "aluno",       label: "Aluno",       icon: "graduation-cap" },
+  { value: "professor",   label: "Professor",   icon: "briefcase" },
+  { value: "coordenador", label: "Coordenador", icon: "clipboard" },
 ];
 
 export default function Login() {
@@ -77,7 +78,7 @@ export default function Login() {
                   : "bg-surface-input text-ink-muted hover:bg-surface-input/80"
               }`}
             >
-              <span className="block text-base sm:text-lg mb-0.5">{type.icon}</span>
+              <Icon name={type.icon} size={22} className="block mx-auto mb-0.5" />
               {type.label}
             </button>
           ))}

@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import cursosService from "../services/cursosService";
+import Icon from "../components/ui/Icon";
 
 // ── Sidebar com ícones ────────────────────────────────────────────────────────
 const SIDEBAR_ICONS = [
-  { icon: "⊞",  to: "/professor/dashboard" },
-  { icon: "📖", to: "/professor/cursos" },
-  { icon: "🎓", to: "/professor/alunos" },
-  { icon: "⚙️", to: "/professor/configuracoes" },
+  { icon: "home",            to: "/professor/dashboard" },
+  { icon: "book",            to: "/professor/cursos" },
+  { icon: "graduation-cap",  to: "/professor/alunos" },
+  { icon: "settings",        to: "/professor/configuracoes" },
 ];
 
 function IconSidebar({ active = 1 }) {
@@ -24,7 +25,7 @@ function IconSidebar({ active = 1 }) {
               : "text-white/50 hover:text-white hover:bg-white/10"
             }`}
         >
-          {item.icon}
+          <Icon name={item.icon} size={18} />
         </button>
       ))}
     </aside>
@@ -96,21 +97,23 @@ export default function GerenciarModulos() {
                 className={`flex items-center gap-1.5 text-sm transition-colors duration-150
                   ${item.active ? "text-ink font-bold" : "text-ink-muted hover:text-ink"}`}
               >
-                {item.label === "Dashboard" && <span>🏠</span>}
-                {item.label === "Cursos"    && <span>📖</span>}
-                {item.label === "Alunos"    && <span>👥</span>}
-                {item.label === "Configurações" && <span>⚙️</span>}
+                {item.label === "Dashboard" && <Icon name="home" size={16} />}
+                {item.label === "Cursos"    && <Icon name="book" size={16} />}
+                {item.label === "Alunos"    && <Icon name="users" size={16} />}
+                {item.label === "Configurações" && <Icon name="settings" size={16} />}
                 {item.label}
               </button>
             ))}
           </nav>
 
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-surface-input border border-border flex items-center justify-center text-ink-muted text-base">
-              👤
+            <div className="w-8 h-8 rounded-full bg-surface-input border border-border flex items-center justify-center">
+              <Icon name="user" size={14} className="text-ink-muted" />
             </div>
             <span className="text-sm font-bold text-ink">Admin</span>
-            <button className="text-ink-muted hover:text-ink text-xl transition">🔔</button>
+            <button className="text-ink-muted hover:text-ink transition">
+              <Icon name="bell" size={18} />
+            </button>
           </div>
         </header>
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Icon from "../components/ui/Icon";
 
 const ALUNOS_TURMA = [
   { nome: "Alice Pereira" },
@@ -57,7 +58,7 @@ export default function Frequencia() {
           className="w-9 h-9 rounded-full bg-brand-light flex items-center justify-center text-base shrink-0"
           aria-label="Avatar do professor"
         >
-          👤
+          <Icon name="user" size={16} className="text-ink" />
         </div>
       </header>
 
@@ -103,7 +104,7 @@ export default function Frequencia() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-surface-input border border-border flex items-center justify-center text-base shrink-0" aria-hidden="true">
-                          👤
+                          <Icon name="user" size={16} className="text-ink" />
                         </div>
                         <span className="font-medium text-ink">{aluno.nome}</span>
                       </div>
@@ -172,7 +173,7 @@ export default function Frequencia() {
               {/* Header do card */}
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-9 h-9 rounded-full bg-surface-input border border-border flex items-center justify-center text-base shrink-0" aria-hidden="true">
-                  👤
+                  <Icon name="user" size={16} className="text-ink" />
                 </div>
                 <span className="font-medium text-ink text-sm">{aluno.nome}</span>
               </div>

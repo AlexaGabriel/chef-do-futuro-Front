@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Icon from "../components/ui/Icon";
 
 // ── Sidebar do Professor ──────────────────────────────────────────────────────
 const NAV_ITEMS = [
-  { label: "Painel",          icon: "🏠", to: "/professor/dashboard" },
-  { label: "Cursos",          icon: "📖", to: "/professor/cursos" },
-  { label: "Alunos",          icon: "👥", to: "/professor/alunos" },
-  { label: "Turmas",          icon: "🎓", to: "/professor/turmas" },
-  { label: "Horários",        icon: "📅", to: "/professor/horarios" },
-  { label: "Lista de Espera", icon: "⏳", to: "/professor/lista-espera" },
-  { label: "Relatórios",      icon: "📊", to: "/professor/relatorios" },
+  { label: "Painel",          icon: "home",            to: "/professor/dashboard" },
+  { label: "Cursos",          icon: "book",            to: "/professor/cursos" },
+  { label: "Alunos",          icon: "users",           to: "/professor/alunos" },
+  { label: "Turmas",          icon: "graduation-cap",  to: "/professor/turmas" },
+  { label: "Horários",        icon: "calendar",        to: "/professor/horarios" },
+  { label: "Lista de Espera", icon: "clock",           to: "/professor/lista-espera" },
+  { label: "Relatórios",      icon: "bar-chart",       to: "/professor/relatorios" },
 ];
 
 function ProfessorSidebar({ activeLabel = "Painel" }) {
@@ -45,7 +46,9 @@ function ProfessorSidebar({ activeLabel = "Painel" }) {
         `}
       >
         <div className="flex items-center gap-3 px-5 py-5 border-b border-white/10 mb-4">
-          <div className="w-9 h-9 bg-brand rounded-xl flex items-center justify-center text-lg shrink-0">🍳</div>
+          <div className="w-9 h-9 bg-brand rounded-xl flex items-center justify-center shrink-0">
+            <Icon name="chef-hat" size={18} className="text-white" />
+          </div>
           <span className="font-display text-white text-sm leading-tight">Escola<br />Chef do Futuro</span>
         </div>
 
@@ -60,7 +63,7 @@ function ProfessorSidebar({ activeLabel = "Painel" }) {
                   : "text-white/60 hover:text-white hover:bg-white/[.06]"
                 }`}
             >
-              <span className="text-base">{item.icon}</span>
+              <Icon name={item.icon} size={18} />
               {item.label}
             </button>
           ))}
@@ -71,7 +74,7 @@ function ProfessorSidebar({ activeLabel = "Painel" }) {
             onClick={() => navigate("/login")}
             className="flex items-center gap-2.5 px-3 py-3 w-full min-h-[44px] rounded-btn text-sm text-white/40 hover:text-white/70 hover:bg-white/[.06] transition-all duration-150"
           >
-            <span>🚪</span> Sair
+            <Icon name="log-out" size={18} /> Sair
           </button>
         </div>
       </aside>
@@ -142,7 +145,7 @@ export default function ProfessorDashboard() {
 
           {/* Busca — escondida em mobile pequeno, visível em sm+ */}
           <div className="relative hidden sm:block w-full max-w-xs">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint text-sm">🔍</span>
+            <Icon name="search" size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint" />
             <input
               placeholder="Pesquisar cursos, alunos..."
               className="w-full bg-surface-input border border-border rounded-btn pl-9 pr-4 py-2.5 text-sm text-ink placeholder:text-ink-faint outline-none focus:border-brand transition"
@@ -152,12 +155,14 @@ export default function ProfessorDashboard() {
           {/* Perfil */}
           <div className="flex items-center gap-2 sm:gap-3 ml-auto">
             <div className="relative">
-              <button aria-label="Notificações" className="text-ink-muted hover:text-ink text-xl transition w-10 h-10 flex items-center justify-center">🔔</button>
+              <button aria-label="Notificações" className="text-ink-muted hover:text-ink transition w-10 h-10 flex items-center justify-center">
+                <Icon name="bell" size={20} />
+              </button>
               <span className="absolute -top-1 -right-1 w-4 h-4 bg-brand rounded-full text-white text-[9px] flex items-center justify-center font-bold">2</span>
             </div>
             <span className="hidden md:block text-sm font-bold text-ink truncate max-w-[120px]">{nomeProfessor}</span>
-            <div className="w-9 h-9 rounded-full bg-brand-light overflow-hidden flex items-center justify-center text-xl shrink-0" aria-hidden="true">
-              👨‍🍳
+            <div className="w-9 h-9 rounded-full bg-brand-light flex items-center justify-center shrink-0" aria-hidden="true">
+              <Icon name="chef-hat" size={16} className="text-ink" />
             </div>
           </div>
         </header>

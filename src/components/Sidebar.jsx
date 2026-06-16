@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import authService from "../services/authService";
+import Icon from "./ui/Icon";
 
 const NAV_ITEMS = [
-  { to: "/inicio",        label: "Painel",        icon: "🏠" },
-  { to: "/meus-cursos",   label: "Meus Cursos",   icon: "📋" },
-  { to: "/catalogo",      label: "Catálogo",       icon: "📚" },
-  { to: "/configuracoes", label: "Configurações",  icon: "⚙️" },
+  { to: "/inicio",        label: "Painel",        icon: "home" },
+  { to: "/meus-cursos",   label: "Meus Cursos",   icon: "clipboard" },
+  { to: "/catalogo",      label: "Catálogo",       icon: "book" },
+  { to: "/configuracoes", label: "Configurações",  icon: "settings" },
 ];
 
 export default function Sidebar() {
@@ -70,7 +71,7 @@ export default function Sidebar() {
         {/* Logo */}
         <div className="flex items-center gap-3 px-5 py-5 border-b border-white/10 mb-4">
           <div className="w-9 h-9 bg-brand rounded-xl flex items-center justify-center text-lg shrink-0">
-            🍳
+            <Icon name="chef-hat" size={18} className="text-white" />
           </div>
           <span className="font-body text-white text-sm font-black tracking-wide whitespace-nowrap">
             Escola Chef do Futuro
@@ -92,7 +93,7 @@ export default function Sidebar() {
                  }`
               }
             >
-              <span className="text-base">{item.icon}</span>
+              <Icon name={item.icon} size={18} />
               {item.label}
             </NavLink>
           ))}
@@ -106,7 +107,7 @@ export default function Sidebar() {
                        text-sm text-white/40 hover:text-white/70
                        hover:bg-white/[.06] transition-all duration-150"
           >
-            <span>🚪</span> Sair
+            <Icon name="log-out" size={18} /> Sair
           </button>
         </div>
       </aside>

@@ -6,6 +6,7 @@ import Input       from "../components/ui/Input";
 import Select      from "../components/ui/Select";
 import FileUpload  from "../components/ui/FileUpload";
 import Button      from "../components/ui/Button";
+import Icon from "../components/ui/Icon";
 import professoresService from "../services/professoresService";
 
 const ESPECIALIDADES = [
@@ -30,7 +31,6 @@ export default function CadastroProfessor() {
   });
   const [enviado, setEnviado] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [erro, setErro] = useState(null);
 
   function set(field) {
     return (e) => {
@@ -107,8 +107,8 @@ export default function CadastroProfessor() {
 
             {/* Linha 1 */}
             <div className="grid grid-cols-2 gap-4">
-              <Input label="Insira seu E-mail" id="email" type="email" placeholder="exemplo@email.com" value={form.email} onChange={set("email")} required prefix="✉️" />
-              <Input label="Insira seu nome"   id="nome"  type="text"  placeholder="Nome Completo"     value={form.nome}  onChange={set("nome")}  required prefix="👤" />
+              <Input label="Insira seu E-mail" id="email" type="email" placeholder="exemplo@email.com" value={form.email} onChange={set("email")} required prefix={<Icon name="mail" size={16} />} />
+              <Input label="Insira seu nome"   id="nome"  type="text"  placeholder="Nome Completo"     value={form.nome}  onChange={set("nome")}  required prefix={<Icon name="user" size={16} />} />
             </div>
 
             {/* Linha 2 */}

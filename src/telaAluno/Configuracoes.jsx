@@ -1,43 +1,110 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import AppLayout from "../layout/AppLayout";
 import Input from "../components/ui/Input";
-import Select from "../components/ui/Select";
 import Button from "../components/ui/Button";
+import Icon from "../components/ui/Icon";
+import alunosService from "../services/alunosService";
+import authService from "../services/authService";
 
 export default function Configuracoes() {
-  const navigate = useNavigate();
-  const nomeAtual = localStorage.getItem("alunoNome") || "";
-  const emailAtual = localStorage.getItem("alunoEmail") || "";
+  const userId = authService.getUserId();
 
   const [form, setForm] = useState({
-    nome: nomeAtual,
-    email: emailAtual,
-    senhaAtual: "",
-    novaSenha: "",
-    confirmarSenha: "",
-    notificacoes: "Ativadas",
-    idioma: "Português",
+    nome: "",
+    email: "",
+    telefone: "",
+    dataNascimento: "",
+    nivelCulinaria: "",
+    observacoes: "",
   });
 
+  const [loading, setLoading] = useState(true);
+  const [salvando, setSalvando] = useState(false);
   const [salvo, setSalvo] = useState(false);
   const [erro, setErro] = useState("");
+
+  useEffect(() => {
+    if (!userId) {
+      setErro("ID do aluno não encontrado. Faça logout e login novamente.");
+      setLoading(false);
+      return;
+    }
+
+    async function carregarAluno() {
+      setLoading(true);
+      setErro("");
+      try {
+        const response = await alunosService.buscarPorId(userId);
+        const dados = response.dados || response.aluno || response;
+
+        setForm({
+          nome: dados.nome || "",
+          email: dados.email || "",
+          telefone: dados.telefone || "",
+          dataNascimento: dados.dataNascimento
+            ? dados.dataNascimento.slice(0, 10)
+            : "",
+          nivelCulinaria: dados.nivelCulinaria || "",
+          observacoes: dados.observacoes || "",
+        });
+      } catch (error) {
+        setErro("Erro ao carregar dados do aluno. Verifique sua conexão.");
+        console.error("[Configuracoes]", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    carregarAluno();
+  }, [userId]);
 
   function set(field) {
     return (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
   }
 
-  function handleSalvar(e) {
+  async function handleSalvar(e) {
     e.preventDefault();
-    if (form.novaSenha && form.novaSenha !== form.confirmarSenha) {
-      setErro("As senhas não coincidem.");
-      return;
-    }
     setErro("");
-    localStorage.setItem("alunoNome", form.nome);
-    localStorage.setItem("alunoEmail", form.email);
-    setSalvo(true);
-    setTimeout(() => setSalvo(false), 2500);
+    setSalvo(false);
+    setSalvando(true);
+
+    try {
+      await alunosService.atualizar(userId, {
+        nome: form.nome,
+        email: form.email,
+        telefone: form.telefone,
+        dataNascimento: form.dataNascimento || undefined,
+        nivelCulinaria: form.nivelCulinaria || undefined,
+        observacoes: form.observacoes || undefined,
+      });
+      setSalvo(true);
+      setTimeout(() => setSalvo(false), 2500);
+    } catch (error) {
+      setErro(error.message || "Erro ao salvar alterações.");
+    } finally {
+      setSalvando(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center h-64 text-ink-faint">
+          Carregando...
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (erro && !form.nome) {
+    return (
+      <AppLayout>
+        <div className="flex flex-col items-center justify-center h-64 gap-3">
+          <p className="text-red-600 font-medium">{erro}</p>
+          <Button onClick={() => window.location.reload()}>Tentar novamente</Button>
+        </div>
+      </AppLayout>
+    );
   }
 
   return (
@@ -45,13 +112,13 @@ export default function Configuracoes() {
       <h2 className="text-2xl font-black mb-7 animate-fade-up">Configurações</h2>
 
       <div className="grid grid-cols-3 gap-6 animate-fade-up-1">
-
         {/* Coluna principal */}
         <div className="col-span-2 flex flex-col gap-6">
-
           {/* Dados pessoais */}
           <div className="bg-surface-card rounded-card shadow-sm p-6">
-            <h3 className="font-body font-black text-base text-ink mb-5">Dados Pessoais</h3>
+            <h3 className="font-body font-black text-base text-ink mb-5">
+              Dados Pessoais
+            </h3>
             <form onSubmit={handleSalvar} className="flex flex-col gap-4">
               <div className="grid grid-cols-2 gap-4">
                 <Input
@@ -71,104 +138,85 @@ export default function Configuracoes() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <Select
-                  label="Notificações"
-                  id="notificacoes"
-                  options={["Ativadas", "Desativadas"]}
-                  value={form.notificacoes}
-                  onChange={set("notificacoes")}
+                <Input
+                  label="Telefone"
+                  id="telefone"
+                  type="text"
+                  value={form.telefone}
+                  onChange={set("telefone")}
+                  placeholder="(11) 99999-9999"
                 />
-                <Select
-                  label="Idioma"
-                  id="idioma"
-                  options={["Português", "English", "Español"]}
-                  value={form.idioma}
-                  onChange={set("idioma")}
+                <Input
+                  label="Data de Nascimento"
+                  id="dataNascimento"
+                  type="date"
+                  value={form.dataNascimento}
+                  onChange={set("dataNascimento")}
                 />
               </div>
 
-              {erro && <p className="text-brand text-sm">{erro}</p>}
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  label="Nível Culinário"
+                  id="nivelCulinaria"
+                  type="text"
+                  value={form.nivelCulinaria}
+                  onChange={set("nivelCulinaria")}
+                  placeholder="iniciante | intermediario | avancado"
+                />
+                <div />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="observacoes"
+                  className="block text-sm font-bold text-ink mb-1.5"
+                >
+                  Observações
+                </label>
+                <textarea
+                  id="observacoes"
+                  value={form.observacoes}
+                  onChange={set("observacoes")}
+                  rows={3}
+                  className="w-full bg-surface-input border border-border rounded-lg px-4 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-brand/30 resize-none"
+                  placeholder="Alergias, restrições alimentares..."
+                />
+              </div>
+
+              {erro && (
+                <p className="text-sm text-red-600 font-medium">{erro}</p>
+              )}
 
               {salvo && (
-                <p className="text-green-600 text-sm font-bold">✅ Configurações salvas!</p>
+                <p className="text-sm text-green-600 font-bold">
+                  Configurações salvas!
+                </p>
               )}
 
               <div className="flex justify-end">
-                <Button type="submit">Salvar Alterações</Button>
+                <Button type="submit" disabled={salvando}>
+                  {salvando ? "Salvando..." : "Salvar Alterações"}
+                </Button>
               </div>
             </form>
-          </div>
-
-          {/* Alterar senha */}
-          <div className="bg-surface-card rounded-card shadow-sm p-6">
-            <h3 className="font-body font-black text-base text-ink mb-5">Alterar Senha</h3>
-            <div className="flex flex-col gap-4">
-              <Input
-                label="Senha Atual"
-                id="senhaAtual"
-                type="password"
-                placeholder="••••••••"
-                value={form.senhaAtual}
-                onChange={set("senhaAtual")}
-              />
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Nova Senha"
-                  id="novaSenha"
-                  type="password"
-                  placeholder="••••••••"
-                  value={form.novaSenha}
-                  onChange={set("novaSenha")}
-                />
-                <Input
-                  label="Confirmar Nova Senha"
-                  id="confirmarSenha"
-                  type="password"
-                  placeholder="••••••••"
-                  value={form.confirmarSenha}
-                  onChange={set("confirmarSenha")}
-                />
-              </div>
-              <div className="flex justify-end">
-                <Button>Alterar Senha</Button>
-              </div>
-            </div>
           </div>
         </div>
 
         {/* Coluna lateral — perfil */}
         <div className="flex flex-col gap-6">
           <div className="bg-surface-card rounded-card shadow-sm p-6 flex flex-col items-center gap-4">
-            <div className="w-20 h-20 rounded-full bg-brand-light flex items-center justify-center text-4xl">
-              👤
+            <div className="w-20 h-20 rounded-full bg-brand-light flex items-center justify-center">
+              <Icon name="user" size={32} className="text-ink" />
             </div>
             <div className="text-center">
               <p className="font-black text-ink">{form.nome || "Aluno"}</p>
-              <p className="text-xs text-ink-muted mt-0.5">{form.email || "—"}</p>
+              <p className="text-xs text-ink-muted mt-0.5">
+                {form.email || "--"}
+              </p>
             </div>
-            <button className="text-xs font-bold text-brand hover:text-brand-dark underline transition">
-              Alterar foto
-            </button>
-          </div>
-
-          {/* Zona de perigo */}
-          <div className="bg-surface-card rounded-card shadow-sm p-6 flex flex-col gap-3">
-            <h3 className="font-body font-black text-base text-ink">Conta</h3>
-            <button
-              onClick={() => {
-                localStorage.clear();
-                navigate("/login");
-              }}
-              className="w-full text-sm font-bold text-white bg-red-500 hover:bg-red-600 rounded-btn py-2.5 transition active:scale-95"
-            >
-              Sair da Conta
-            </button>
-            <button className="w-full text-sm font-bold text-red-500 border border-red-200 hover:bg-red-50 rounded-btn py-2.5 transition">
-              Excluir Conta
-            </button>
           </div>
         </div>
-
       </div>
     </AppLayout>
   );

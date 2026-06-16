@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import alunosService from "../services/alunosService";
+import Icon from "../components/ui/Icon";
 
 const TURMAS = ["Todas", "Confeitaria Avançada", "Introdução à Panificação", "Culinária Mediterrânea"];
 const POR_PAGINA = 6;
@@ -54,11 +55,13 @@ export default function ListaEspera() {
       {/* Topnav escuro */}
       <header className="h-14 bg-sidebar flex items-center justify-end px-8 gap-4 shrink-0">
         <div className="relative">
-          <button className="text-white/60 hover:text-white text-xl transition">🔔</button>
+          <button className="text-white/60 hover:text-white transition">
+            <Icon name="bell" size={20} />
+          </button>
           <span className="absolute -top-1 -right-1 w-4 h-4 bg-brand rounded-full text-white text-[9px] flex items-center justify-center font-bold">1</span>
         </div>
-        <div className="w-8 h-8 rounded-full bg-brand-light flex items-center justify-center text-base">
-          👤
+        <div className="w-8 h-8 rounded-full bg-brand-light flex items-center justify-center">
+          <Icon name="user" size={14} className="text-ink" />
         </div>
       </header>
 

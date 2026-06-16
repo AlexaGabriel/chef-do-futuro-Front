@@ -1,11 +1,14 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import ProgressBar from "../ui/ProgressBar";
+import Icon from "../ui/Icon";
 import authService from "../../services/authService";
+
+const NOTIFICACOES = [];
 
 export default function Topnav({ titulo, progresso }) {
   const navigate = useNavigate();
+  const [notifAberta, setNotifAberta] = useState(false);
   const userName = useMemo(() => {
     const user = authService.getUser();
     return user?.nome || "Usuário";
@@ -41,8 +44,8 @@ export default function Topnav({ titulo, progresso }) {
         <span className="text-white/60 text-sm">Olá, {userName}</span>
 
         {/* Avatar */}
-        <div className="w-9 h-9 rounded-full bg-brand-light flex items-center justify-center text-base shrink-0">
-          👤
+        <div className="w-9 h-9 rounded-full bg-brand-light flex items-center justify-center shrink-0">
+          <Icon name="user" size={16} className="text-ink" />
         </div>
 
         {/* Ícones */}
@@ -51,7 +54,7 @@ export default function Topnav({ titulo, progresso }) {
             onClick={() => setNotifAberta((o) => !o)}
             className="text-white/50 hover:text-white transition text-lg"
           >
-            🔔
+            <Icon name="bell" size={18} />
           </button>
           <span className="absolute -top-1 -right-1 w-4 h-4 bg-brand rounded-full text-white text-[9px] flex items-center justify-center font-bold">
             {NOTIFICACOES.length}
@@ -88,7 +91,7 @@ export default function Topnav({ titulo, progresso }) {
           onClick={() => navigate("/configuracoes")}
           className="text-white/50 hover:text-white transition text-lg"
         >
-          ⚙️
+          <Icon name="settings" size={18} />
         </button>
       </div>
     </header>

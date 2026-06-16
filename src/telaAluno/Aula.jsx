@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Topnav           from "../components/layout/Topnav";
 import SectionAccordion from "../components/curso/SectionAccordion";
+import Icon from "../components/ui/Icon";
 
 const SECOES = [
   {
@@ -89,8 +90,12 @@ export default function Aula() {
               <svg className="w-6 h-5 fill-white/60 hover:fill-white transition cursor-pointer" viewBox="0 0 24 24">
                 <path d="M19 4H5a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3zm-8 9H8v-1h3v1zm5 0h-3v-1h3v1zm2-3H8V9h10v1z"/>
               </svg>
-              <button className="text-white/60 text-base hover:text-white transition">⚙️</button>
-              <button className="text-white/60 text-base hover:text-white transition">⛶</button>
+              <button className="text-white/60 hover:text-white transition">
+                <Icon name="settings" size={16} />
+              </button>
+              <button className="text-white/60 hover:text-white transition">
+                <Icon name="maximize" size={16} />
+              </button>
             </div>
           </div>
 

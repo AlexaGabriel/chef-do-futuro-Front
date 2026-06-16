@@ -100,16 +100,23 @@ const authService = {
 
     const user = authService.getUser();
     if (user) {
-      const id = user.id || user._id || user.usuarioId || user.userId;
-      if (id) return id;
+      for (const key of ['id', '_id', 'userId', 'usuarioId', 'alunoId', 'professorId']) {
+        if (user[key]) return String(user[key]);
+      }
+      for (const key of Object.keys(user)) {
+        if (/id$/i.test(key) && user[key]) return String(user[key]);
+      }
     }
 
-    // Fallbacks do padrão antigo do código
     const professorId = localStorage.getItem('professorId');
     if (professorId && professorId !== 'temp-professor-id') return professorId;
 
     const alunoId = localStorage.getItem('alunoId');
     if (alunoId) return alunoId;
+
+    if (user) {
+      console.warn('[authService] Não foi possível extrair userId do objeto:', user);
+    }
 
     return null;
   }

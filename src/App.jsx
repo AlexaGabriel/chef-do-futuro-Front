@@ -13,10 +13,13 @@ import GerenciarModulos from "./telaProfessor/GerenciarModulos";
 import ListaEspera from "./telaProfessor/ListaEspera";
 import Frequencia from "./telaProfessor/Frequencia";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { ChatProvider } from "./context/ChatContext";
+import ChatFloatingButton from "./components/chat/ChatFloatingButton";
 
 export default function App() {
   return (
     <BrowserRouter>
+      <ChatProvider>
       <Routes>
         <Route path="/"                    element={<Navigate to="/login" replace />} />
 
@@ -75,6 +78,8 @@ export default function App() {
 
         <Route path="*"                    element={<Navigate to="/login" replace />} />
       </Routes>
+      <ChatFloatingButton />
+      </ChatProvider>
     </BrowserRouter>
   );
 }

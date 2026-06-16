@@ -16,7 +16,6 @@ const ESPECIALIDADES = [
 
 export default function CadastroProfessor() {
   const navigate = useNavigate();
-  const [erro, setErro] = useState("");
   const [form, setForm] = useState({
     email: "", 
     nome: "", 
@@ -65,7 +64,6 @@ export default function CadastroProfessor() {
       // Remove confirmarSenha antes de enviar
       const { confirmarSenha, ...dadosEnvio } = form;
       await professoresService.criar(dadosEnvio);
-      localStorage.setItem("professorNome", form.nome);
       setEnviado(true);
       setTimeout(() => navigate("/login"), 2200);
     } catch (error) {

@@ -16,7 +16,6 @@ const NIVEIS = ["iniciante", "intermediario", "avancado"];
 
 export default function CadastroAluno() {
   const navigate = useNavigate();
-  const [erro, setErro] = useState("");
   const [form, setForm] = useState({
     email: "", 
     nome: "", 

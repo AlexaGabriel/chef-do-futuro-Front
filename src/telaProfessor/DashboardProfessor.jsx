@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Icon from "../components/ui/Icon";
+import authService from "../services/authService";
 
 // ── Sidebar do Professor ──────────────────────────────────────────────────────
 const NAV_ITEMS = [
@@ -16,6 +17,11 @@ const NAV_ITEMS = [
 function ProfessorSidebar({ activeLabel = "Painel" }) {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+
+  function handleLogout() {
+    authService.logout();
+    navigate("/login");
+  }
 
   return (
     <>
@@ -71,7 +77,7 @@ function ProfessorSidebar({ activeLabel = "Painel" }) {
 
         <div className="px-3 pb-6">
           <button
-            onClick={() => navigate("/login")}
+            onClick={handleLogout}
             className="flex items-center gap-2.5 px-3 py-3 w-full min-h-[44px] rounded-btn text-sm text-white/40 hover:text-white/70 hover:bg-white/[.06] transition-all duration-150"
           >
             <Icon name="log-out" size={18} /> Sair
@@ -131,7 +137,7 @@ const COR_TAREFA = {
 // ── Componente principal ───────────────────────────────────────────────────────
 export default function ProfessorDashboard() {
   const navigate = useNavigate();
-  const nomeProfessor = localStorage.getItem("professorNome") || "Professor";
+  const nomeProfessor = useMemo(() => authService.getUser()?.nome || "Professor", []);
 
   return (
     <div className="flex min-h-screen bg-surface font-body overflow-x-hidden">

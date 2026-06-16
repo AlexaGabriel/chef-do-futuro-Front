@@ -143,6 +143,14 @@ export default function Login() {
           >
             Sou professor
           </Button>
+          <span className="hidden sm:inline mx-1">·</span>
+          <Button
+            variant="link"
+            onClick={() => navigate("/cadastro-coordenador")}
+            className="font-bold"
+          >
+            Cadastrar Coordenador
+          </Button>
         </div>
       </div>
     </AuthLayout>
